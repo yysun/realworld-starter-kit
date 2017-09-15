@@ -4,6 +4,7 @@ import { IArticle } from '../models';
 import Comments from './comment-list';
 import ArticleMeta from './article-meta';
 import Modal from './modal';
+import Animation, { animate } from './animation';
 import * as marked from 'marked';
 
 class ArticleComponent extends Component {
@@ -16,43 +17,45 @@ class ArticleComponent extends Component {
     const article = state.article as IArticle;
     if (!article) return;
 
-    return <div className="article-page">
+    return <Animation animation='animated slideInLeft'>
+      <div className="article-page">
 
-      {
-        state.deleting ? <Modal title='Delete Article'
-        body='Are you sure you want to delete this article?'
-        ok='Delete' cancel='No'
-        onOK={e => this.run('ok-delete-article', e)}
-        onCancel={e => this.run('cancel-delete-article', e)} /> : ''
-      }
+        {
+          state.deleting ? <Modal title='Delete Article'
+            body='Are you sure you want to delete this article?'
+            ok='Delete' cancel='No'
+            onOK={e => this.run('ok-delete-article', e)}
+            onCancel={e => this.run('cancel-delete-article', e)} /> : ''
+        }
 
-      <div className="banner">
-        <div className="container">
-          <h1>{article.title}</h1>
-          <ArticleMeta article={article} />
-        </div>
-      </div>
-
-      <div className="container page">
-        <div className="row article-content">
-          <div className="col-md-12">
-            <p>{`_html:${marked(article.body, { sanitize: true })}`}</p>
-            <div className="tag-list"><br />
-              {article.tagList.map(tag =>
-                <li className="tag-default tag-pill tag-outline">
-                  <a href={`#/tag/${tag}`}>{tag} </a>
-                </li>
-              )}
-            </div>
+        <div className="banner">
+          <div className="container">
+            <h1>{article.title}</h1>
+            <ArticleMeta article={article} />
           </div>
         </div>
-        <hr />
-        <div className="article-actions">
-          <ArticleMeta article={article} />
+
+        <div className="container page">
+          <div className="row article-content">
+            <div className="col-md-12">
+              <p>{`_html:${marked(article.body, { sanitize: true })}`}</p>
+              <div className="tag-list"><br />
+                {article.tagList.map(tag =>
+                  <li className="tag-default tag-pill tag-outline">
+                    <a href={`#/tag/${tag}`}>{tag} </a>
+                  </li>
+                )}
+              </div>
+            </div>
+          </div>
+          <hr />
+          <div className="article-actions">
+            <ArticleMeta article={article} />
+          </div>
+          <Comments comments={state.comments} />
         </div>
-        <Comments comments={state.comments} />
       </div>
-    </div>
+    </Animation>
   }
 
   @on('#/article') root = async (state, slug) => {
@@ -95,8 +98,9 @@ class ArticleComponent extends Component {
     return { ...state, comments: commentsResponse.comments }
   }
 
-  @on('#toggle-fav-article') toggleFavArticle = async (state, article: IArticle, id: string) => {
+  @on('#toggle-fav-article') toggleFavArticle = async (state, article: IArticle, id: string, e) => {
     if (!app['user']) return app.run('#/login');
+    await animate(e.target, 'flipOutY');
     const result = article.favorited
       ? await articles.unfavorite(article.slug)
       : await articles.favorite(article.slug);

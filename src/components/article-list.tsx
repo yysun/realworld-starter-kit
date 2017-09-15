@@ -14,7 +14,7 @@ function Article(props) {
         <span className="date">{new Date(article.updatedAt).toLocaleString()}</span>
       </div>
       <button className={`btn btn-sm pull-xs-right ${favClass}`}
-        onclick={e => app.run('#toggle-fav-article', article, props.id)}>
+        onclick={e => app.run('#toggle-fav-article', article, props.id, e)}>
         <i className="ion-heart"></i> {article.favoritesCount}
       </button>
     </div>

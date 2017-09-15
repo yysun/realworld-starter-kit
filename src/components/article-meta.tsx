@@ -34,7 +34,7 @@ export default
           }
         </button> &nbsp;&nbsp;
         <button className={`btn btn-sm ${favClass}`}
-          onclick={e => app.run('#toggle-fav-article', article, 'article')}>
+          onclick={e => app.run('#toggle-fav-article', article, 'article', e)}>
           <i className="ion-heart"></i>
           &nbsp; Favorite Post <span className="counter">({article.favoritesCount})</span>
         </button>
